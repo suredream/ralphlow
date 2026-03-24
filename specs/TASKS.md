@@ -60,16 +60,16 @@
 
 ### T3 - 创建 planner workflow bundle
 
-- **Goal**：在 `.claude/skills/planner/` 下创建六个 planner skill 的 `SKILL.md`，以及 planner 的 `CLAUDE.md` 模板。
+- **Goal**：在 `.claude/skills/` 下创建六个 planner skill 的 `SKILL.md`，以及 planner 的 `CLAUDE.md` 模板。
 - **Why it exists**：planner bundle 当前完全不存在，T1 安装器安装 planner 时需要源文件。
 - **Scope**：
   - 新建目录 `.claude/skills/planner/`
-  - 六个 skill 目录各含 `SKILL.md`：`to-project`、`to-feasibility`、`to-actions`、`review-project`、`execution-readiness-check`、`decide-execution-mode`
+  - 六个 skill 目录各含 `SKILL.md`：`plan-spec`、`plan-eval`、`plan-actions`、`plan-review`、`plan-readiness-check`、`plan-execution-mode`
   - 每个 `SKILL.md` 包含：单句用途注释 + 输入文档说明 + 输出格式说明 + 基本 prompt 内容
   - 新建 planner 的 `CLAUDE.md` 模板（含 workflow 类型、强制阅读顺序、命令列表）
 - **Dependencies**：无（独立可创建，T1 安装器依赖此 bundle 完整才能端到端验收 planner）
 - **Acceptance**：
-  - `.claude/skills/planner/` 下恰好六个 skill 目录，各含 `SKILL.md`
+  - `.claude/skills/` 下恰好六个 以plan-为首的skill 目录，各含 `SKILL.md`
   - 所有 skill 文件名符合 `<verb>-<domain>` 规范
   - planner 的 `CLAUDE.md` 模板存在，包含可用命令列表
   - 人工阅读各 `SKILL.md`，内容描述与 SPEC 中的 planner 职责一致

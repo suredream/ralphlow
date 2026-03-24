@@ -1,394 +1,150 @@
-# AI-Native Spec-Driven Development Workflow（基于 Claude Code + Ralph）
+# ralphlow
 
-本仓库实现了一套 **以 Spec 为核心驱动、结合 Claude Code Skills 与 Ralph 执行循环的 AI-native 开发流程**。
-目标是将「想法 → 系统设计 → 可执行代码」转化为**可控、可验证、可回溯**的工程过程。
-
----
-
-# 🧭 核心理念
-
-本系统基于以下原则：
-
-* **Spec 是唯一事实来源（Source of Truth）**
-* **开发按最小切片推进（CURRENT）**
-* **执行与决策分离（Claude Code vs Ralph vs Review）**
-* **每一步都可验证、可回放、可审计**
+**ralphlow** is an installer for AI-native workflows powered by [Claude Code](https://claude.ai/code) and [Ralph](https://github.com/anthropics/ralph). It provisions a project directory with the right skills, CLAUDE.md, and Ralph configuration for three distinct modes of work: **build**, **plan**, and **write**.
 
 ---
 
-# 🏗️ 系统整体架构
+## How it works
 
-```text
-ChatGPT（构思）
-  ↓
+Each workflow installs a set of Claude Code skills into `.claude/skills/` and drops the matching `CLAUDE.md` into the project root. Ralph is then enabled to run execution loops guided by those skills and files.
+
+```
+install.sh <install-path> [build|plan|write]
+```
+
+**Default mode:** `build`
+
+---
+
+## Workflows
+
+### build
+
+For spec-driven software development. Claude Code maintains a control plane of spec files; Ralph executes one tightly scoped slice at a time.
+
+**Loop:**
+```
 init_idea.md
-
-Claude Code（Specs 生成与维护）
-  ↓
-specs/
-  SPEC.md
-  ARCH.md
-  TASKS.md
-  RULES.md
-  CURRENT.md
-
-Scripts（控制与同步）
-  ↓
-sync_to_ralph.sh
-
-Ralph（执行循环）
-  ↓
-代码变更 + artifacts
-
-验证 / 评审（verify.sh / review.sh）
-  ↓
-决策是否进入下一轮
+  → /build-spec       (SPEC.md)
+  → /build-arch       (ARCH.md)
+  → /build-tasks      (TASKS.md)
+  → /build-current    (CURRENT.md — one slice)
+  → /build-review     (REVIEW.json — gate check)
+  → ralph             (executes current slice)
+  → repeat
 ```
+
+**Skills installed:**
+
+| Skill | Purpose |
+|---|---|
+| `/build-spec` | Generate or revise `specs/SPEC.md` from `init_idea.md` |
+| `/build-arch` | Generate or revise `specs/ARCH.md` from `SPEC.md` |
+| `/build-tasks` | Generate or revise `specs/TASKS.md` from `SPEC.md` + `ARCH.md` |
+| `/build-current` | Select and scope the next execution slice into `CURRENT.md` |
+| `/build-review` | Review all spec files and produce `REVIEW.json` for execution gating |
+
+**Core files (`specs/`):**
+- `SPEC.md` — product intent, scope, acceptance criteria
+- `ARCH.md` — architecture, boundaries, trade-offs
+- `TASKS.md` — implementation backlog
+- `RULES.md` — execution process rules
+- `CURRENT.md` — the single active slice
 
 ---
 
-# 📁 目录结构说明
+### plan
 
-```text
-repo/
-  CLAUDE.md              # Claude Code 全局行为规则
-  init_idea.md           # ChatGPT 讨论沉淀
+For project feasibility analysis and decision support. No code is written — the goal is to reduce uncertainty, clarify blockers, and define executable next steps.
 
-  specs/                 # 控制面（Control Plane）
-    SPEC.md              # 目标与验收
-    ARCH.md              # 架构设计
-    TASKS.md             # 任务拆解
-    RULES.md             # 执行规则
-    CURRENT.md           # 当前切片
-
-  .claude/skills/        # Claude Code Skills
-    init-idea-to-spec/
-    spec-to-arch/
-    arch-to-tasks/
-    make-current/
-    review-specs/
-
-  scripts/               # 执行与审计脚本
-    sync_to_ralph.sh：把当前 specs 同步成 Ralph 可执行输入，并可选直接启动 Ralph
-    verify.sh：执行验证命令并保存结果
-    review.sh：做静态规则检查 + 产出 review 结论
-    collect_artifacts.sh：收集本轮执行证据
-
-  artifacts/             # 每轮执行证据
-  logs/                  # 运行日志
+**Loop:**
 ```
-
----
-
-# 🔁 标准开发流程
-
-## Step 1：构思（ChatGPT）
-
-在 ChatGPT 中讨论需求，并将结果整理为：
-
-```text
 init_idea.md
+  → /plan-spec        (PROJECT.md)
+  → /plan-eval        (FEASIBILITY.md)
+  → /plan-actions     (ACTIONS.md, BLOCKERS.md)
+  → /plan-focus       (CURRENT_FOCUS.md)
+  → /plan-ready       (readiness assessment)
+  → /plan-dp          (execution decision)
+  → /plan-review      (REVIEW.json)
+  → repeat or hand off to build
 ```
 
-内容可以包括：
+**Skills installed:**
 
-* 问题背景
-* 用户流程
-* 特殊规则
-* 初步方案
-* 风险与假设
+| Skill | Purpose |
+|---|---|
+| `/plan-spec` | Convert an initial idea into a structured `PROJECT.md` |
+| `/plan-eval` | Evaluate feasibility of the project |
+| `/plan-actions` | Convert feasibility insights into concrete actions and blockers |
+| `/plan-focus` | Define the next iteration focus |
+| `/plan-ready` | Assess whether the project is ready to move into execution |
+| `/plan-dp` | Produce a concrete execution decision with strict constraints |
+| `/plan-review` | Evaluate current project state and produce `REVIEW.json` |
 
-⚠️ 注意：
-`init_idea.md` 不是最终执行依据，只是原始材料。
+**Core files:**
+- `PROJECT.md` — project definition and scope
+- `FEASIBILITY.md` — feasibility assessment
+- `BLOCKERS.md` — active blockers
+- `ACTIONS.md` — next executable actions
+- `CURRENT_FOCUS.md` — active iteration focus
 
 ---
 
-## Step 2：生成 Spec（Claude Code Skills）
+### write
 
-进入 Claude Code，在 repo 中运行：
+For producing structured written content (articles, long-form pieces, opinion writing). The loop refines a single idea into a polished draft.
 
-```text
-/init-idea-to-spec
-/spec-to-arch
-/arch-to-tasks
-/make-current
+**Loop:**
 ```
-
-生成：
-
-* `specs/SPEC.md`
-* `specs/ARCH.md`
-* `specs/TASKS.md`
-* `specs/CURRENT.md`
-
-`RULES.md` 一般为项目初始化时创建，后续少量修改。
-
----
-
-## Step 3：检查控制文件（可选但推荐）
-
-运行：
-
-```text
-/review-spec
-```
-
-用于检查：
-
-* spec 是否一致
-* 架构是否合理
-* task 是否过大
-* CURRENT 是否过宽
-
----
-
-## Step 4：同步到 Ralph
-
-执行：
-
-```bash
-scripts/sync_to_ralph.sh
-```
-
-该脚本负责：
-
-* 读取 `CURRENT.md` + `RULES.md`
-* 生成 Ralph 执行输入
-* 初始化本轮 artifacts
-* 启动 `ralph` 执行循环
-
----
-
-## Step 5：Ralph 执行开发
-
-```bash
-ralph
-```
-
-Ralph 将：
-
-* 基于当前切片进行代码实现
-* 多轮调用 Claude Code
-* 推进当前 slice 的完成
-
----
-
-## Step 6：验证与评审
-
-执行：
-
-```bash
-scripts/verify.sh
-scripts/review.sh
-scripts/collect_artifacts.sh
-```
-
-分别用于：
-
-### verify.sh
-
-* 测试（unit / integration）
-* lint / typecheck
-* build 检查
-
-### review.sh
-
-* 是否符合 SPEC / ARCH
-* 是否越界修改
-* 是否 scope 漂移
-* 是否存在“投机性实现”
-
-### collect_artifacts.sh
-
-收集：
-
-```text
-artifacts/<loop_id>/
-  prompt.txt
-  current.md
-  changed-files.txt
-  git diff
-  test output
-  review.md
-```
-
----
-
-## Step 7：决策下一步
-
-根据验证与评审结果：
-
-### ✅ 通过
-
-* 更新 `TASKS.md` 状态
-* 生成新的 `CURRENT.md`
-* 进入下一轮
-
-### ❌ 不通过
-
-* 修正 `CURRENT.md`
-* 或修正 `TASKS.md / ARCH.md`
-* 或回到 SPEC 层
-
----
-
-# 🔄 需求变更流程
-
-当需求发生变化时：
-
-❌ 不要直接改代码
-✅ 应该：
-
-1. 更新 `init_idea.md` 或新增补充说明
-2. 使用 Claude Code skills 更新：
-
-```text
-/init-idea-to-spec
-/spec-to-arch
-/arch-to-tasks
-```
-
-3. 重新生成：
-
-```text
-/make-current
-```
-
-4. 再进入 Ralph 执行
-
----
-
-# 🧩 Skills 说明
-
-| Skill             | 作用          |
-| ----------------- | ----------- |
-| init-idea-to-spec | 从想法生成 SPEC  |
-| spec-to-arch      | 从 SPEC 生成架构 |
-| arch-to-tasks     | 拆分任务        |
-| make-current      | 生成当前最小切片    |
-| review-specs      | 检查 spec 一致性 |
-
----
-
-# ⚠️ 关键规则（必须遵守）
-
-### 1. 永远只执行 CURRENT.md
-
-* 不允许多任务并行
-* 不允许顺手做“下一个任务”
-
-### 2. Spec 优先于代码
-
-* 需求变化 → 改 SPEC
-* 架构变化 → 改 ARCH
-
-### 3. 小步推进
-
-* CURRENT 必须是最小可验证切片
-
-### 4. 不允许“作弊”
-
-* 不删除测试让 CI 通过
-* 不隐藏失败
-* 不虚报完成
-
-### 5. 所有工作必须可回溯
-
-* 必须保留 artifacts
-* 必须记录变更与验证
-
----
-
-# 🚫 常见错误
-
-### ❌ 直接从 init_idea 写代码
-
-→ 应先生成 SPEC
-
-### ❌ CURRENT 过大
-
-→ 应拆分 slice
-
-### ❌ TASKS 过粗
-
-→ 应细化为可验证任务
-
-### ❌ ARCH 写成 TASKS
-
-→ 应只写结构与决策
-
-### ❌ 跳过 review
-
-→ 会导致 spec drift
-
----
-
-# 🎯 适用场景
-
-本系统特别适用于：
-
-* AI-native 产品开发
-* 多 agent 协作开发
-* 复杂系统设计到落地
-* 需要强可控性与审计能力的项目
-* 快速迭代但不能失控的工程
-
----
-
-# 🧠 一句话总结
-
-> **用 ChatGPT 想清楚问题，用 Claude Code 写清楚规则，用 Ralph 执行代码，用验证与评审守住边界。**
-
----
-
-如果你是第一次使用，建议：
-
-1. 从一个小项目开始
-2. 保持 CURRENT 很小
-3. 强制执行验证与 review
-4. 逐步优化 skills 与 scripts
-
-这套系统的价值不在“更快写代码”，
-而在**让 AI 参与开发变得可控、可信、可复用**。
-
-
-
-# 四、content-writer 的 loop
-
-```text
 idea
-  ↓
-idea-to-content-spec
-  ↓
-spec-to-structure
-  ↓
-write-draft
-  ↓
-CURRENT（段落级 focus）
-  ↓
-refine-logic / compress / add-hooks
-  ↓
-review-content
-  ↓
-next iteration
+  → /write-spec       (CONTENT_SPEC.md)
+  → /write-struct     (STRUCTURE.md)
+  → /write-draft      (DRAFT.md)
+  → /write-logic      (improve argument flow)
+  → /write-review     (evaluate quality and readiness)
+  → repeat
+```
 
+**Skills installed:**
 
-# planer loop
+| Skill | Purpose |
+|---|---|
+| `/write-spec` | Convert an idea into a structured content specification |
+| `/write-struct` | Convert a spec into a content structure |
+| `/write-draft` | Generate an initial draft based on structure |
+| `/write-logic` | Improve logical flow and argument clarity |
+| `/write-review` | Evaluate content quality and readiness |
 
-init_idea.md
-  ↓
-/idea-to-project
-  ↓
-/project-to-feasibility
-  ↓
-/feasibility-to-actions
-  ↓
-/make-current-focus
-  ↓
-/review-project
-  ↓
-sync_to_ralph.sh
-  ↓
-(更新 specs)
-  ↓
-下一轮
+**Core files:**
+- `CONTENT_SPEC.md` — content intent and constraints
+- `STRUCTURE.md` — section-level outline
+- `DRAFT.md` — working draft
+- `CURRENT.md` — active focus (paragraph or section level)
+
+---
+
+## Installation
+
+```bash
+# Install into a new or existing directory
+./install.sh ~/projects/my-app build
+./install.sh ~/projects/my-plan plan
+./install.sh ~/projects/my-article write
+```
+
+The script:
+1. Creates the target directory if absent
+2. Runs `git init` (idempotent)
+3. Copies the matching `CLAUDE.md` as the project root `CLAUDE.md`
+4. Copies the workflow's skills into `.claude/skills/`
+5. Runs `ralph-enable` to configure the Ralph loop
+
+---
+
+## Key principles (all modes)
+
+- **One slice at a time.** Never execute beyond `CURRENT.md` (or `CURRENT_FOCUS.md`).
+- **Specs before code.** Requirements change → update the spec first, then implement.
+- **Every step is verifiable.** Acceptance criteria must be concrete and checkable.
+- **No silent scope expansion.** All deviations must be explicit and recorded.

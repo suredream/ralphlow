@@ -10,12 +10,19 @@ You must convert feasibility into:
 - actionable steps
 - explicit blockers
 
+## Resolve Project
+
+Determine `<project>` using this priority order:
+1. Explicit argument passed when invoking this skill (e.g. `/plan-actions alpha`)
+2. Project declared in the current conversation (e.g. "working on: alpha")
+3. If neither is available, ask the user to specify the project name before proceeding.
+
 ## Output
 
 Update:
 
-- BLOCKERS.md
-- ACTIONS.md
+- `specs/<project>/BLOCKERS.md`
+- `specs/<project>/ACTIONS.md`
 
 ---
 

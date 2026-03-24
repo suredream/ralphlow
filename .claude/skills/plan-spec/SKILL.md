@@ -7,7 +7,16 @@ description: Convert an initial idea into a structured PROJECT.md
 
 You must transform `init_idea.md` into a structured project definition.
 
-## Output → specs/PROJECT.md
+## Resolve Project
+
+Determine `<project>` using this priority order:
+1. Explicit argument passed when invoking this skill (e.g. `/plan-spec alpha`)
+2. Project declared in the current conversation (e.g. "working on: alpha")
+3. If neither is available, ask the user to specify the project name before proceeding.
+
+Create `specs/<project>/` directory if it does not exist.
+
+## Output → specs/\<project\>/PROJECT.md
 
 Include:
 

@@ -1,3 +1,4 @@
+---
 name: plan-dp
 description: Convert execution readiness assessment into a concrete execution decision with strict constraints.
 ---
@@ -10,15 +11,24 @@ This step is REQUIRED before any transition into execution workflows (code-build
 
 ---
 
+## Resolve Project
+
+Determine `<project>` using this priority order:
+1. Explicit argument passed when invoking this skill (e.g. `/plan-dp alpha`)
+2. Project declared in the current conversation (e.g. "working on: alpha")
+3. If neither is available, ask the user to specify the project name before proceeding.
+
+---
+
 ## Inputs
 
 Read:
 
-- specs/EXECUTION_READINESS.md
-- specs/PROJECT.md
-- specs/FEASIBILITY.md
-- specs/BLOCKERS.md
-- specs/ACTIONS.md
+- `specs/<project>/EXECUTION_READINESS.md`
+- `specs/<project>/PROJECT.md`
+- `specs/<project>/FEASIBILITY.md`
+- `specs/<project>/BLOCKERS.md`
+- `specs/<project>/ACTIONS.md`
 
 ---
 
@@ -27,8 +37,8 @@ Read:
 Write:
 
 ```text
-specs/EXECUTION_DECISION.md
-````
+specs/<project>/EXECUTION_DECISION.md
+```
 
 Overwrite if exists.
 
@@ -184,7 +194,7 @@ Do NOT:
 * leave scope ambiguous
 * say "start building" without constraints
 * allow unlimited scope
-* skip “Why NOT Other Modes”
+* skip "Why NOT Other Modes"
 * produce vague success criteria
 
 ---

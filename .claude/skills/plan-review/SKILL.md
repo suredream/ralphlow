@@ -7,17 +7,24 @@ description: Evaluate current project state and produce REVIEW.json
 
 You must evaluate the current state of the project.
 
+## Resolve Project
+
+Determine `<project>` using this priority order:
+1. Explicit argument passed when invoking this skill (e.g. `/plan-review alpha`)
+2. Project declared in the current conversation (e.g. "working on: alpha")
+3. If neither is available, ask the user to specify the project name before proceeding.
+
 ## Inputs
 
-- PROJECT.md
-- FEASIBILITY.md
-- BLOCKERS.md
-- ACTIONS.md
-- CURRENT_FOCUS.md
+- `specs/<project>/PROJECT.md`
+- `specs/<project>/FEASIBILITY.md`
+- `specs/<project>/BLOCKERS.md`
+- `specs/<project>/ACTIONS.md`
+- `specs/<project>/CURRENT_FOCUS.md`
 
 ---
 
-## Output → specs/REVIEW.json
+## Output → specs/\<project\>/REVIEW.json
 
 ```json
 {
@@ -28,7 +35,7 @@ You must evaluate the current state of the project.
   "minor": [],
   "recommendations": []
 }
-````
+```
 
 ---
 

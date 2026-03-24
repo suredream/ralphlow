@@ -7,8 +7,17 @@ description: Evaluate whether a project is ready to move from planning into exec
 
 You must evaluate whether the current project is ready to move from **plan-planner mode** into an **execution workflow** such as code-builder or content-writer.
 
-This skill does NOT generate implementation specs directly.  
+This skill does NOT generate implementation specs directly.
 Its job is to decide whether execution should begin, and under what mode.
+
+---
+
+## Resolve Project
+
+Determine `<project>` using this priority order:
+1. Explicit argument passed when invoking this skill (e.g. `/plan-ready alpha`)
+2. Project declared in the current conversation (e.g. "working on: alpha")
+3. If neither is available, ask the user to specify the project name before proceeding.
 
 ---
 
@@ -16,13 +25,13 @@ Its job is to decide whether execution should begin, and under what mode.
 
 Read the following files if present:
 
-- `specs/PROJECT.md`
-- `specs/FEASIBILITY.md`
-- `specs/BLOCKERS.md`
-- `specs/ACTIONS.md`
-- `specs/CURRENT_FOCUS.md`
+- `specs/<project>/PROJECT.md`
+- `specs/<project>/FEASIBILITY.md`
+- `specs/<project>/BLOCKERS.md`
+- `specs/<project>/ACTIONS.md`
+- `specs/<project>/CURRENT_FOCUS.md`
 - `specs/RULES.md`
-- `specs/REVIEW.json`
+- `specs/<project>/REVIEW.json`
 
 You may also read `init_idea.md` for original context, but do NOT treat it as the current source of truth.
 
@@ -33,8 +42,8 @@ You may also read `init_idea.md` for original context, but do NOT treat it as th
 Write:
 
 ```text
-specs/EXECUTION_READINESS.md
-````
+specs/<project>/EXECUTION_READINESS.md
+```
 
 If it already exists, update it in place.
 
@@ -200,7 +209,7 @@ Use this when:
 
 * Be explicit, not diplomatic
 * Do not force readiness if the project is not ready
-* Do not confuse “interesting” with “execution-ready”
+* Do not confuse "interesting" with "execution-ready"
 * Separate unresolved uncertainty from acceptable risk
 * If the correct answer is `not_ready`, say so directly
 * If the correct answer is `ready_for_poc`, define what uncertainty the POC should reduce
@@ -218,7 +227,7 @@ Your `Recommended Next Step` must be one of these categories:
 * export to execution workflow
 * resolve blocker first
 
-Do NOT give generic next steps like “keep exploring” unless you specify exactly what must be explored.
+Do NOT give generic next steps like "keep exploring" unless you specify exactly what must be explored.
 
 ---
 
@@ -253,7 +262,7 @@ Do not:
 
 Before finishing, verify:
 
-* `specs/EXECUTION_READINESS.md` exists
+* `specs/<project>/EXECUTION_READINESS.md` exists
 * the decision is one of: `not_ready`, `ready_for_poc`, `ready_for_build`
 * all six readiness dimensions were evaluated
 * the reasoning is explicit

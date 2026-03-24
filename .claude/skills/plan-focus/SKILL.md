@@ -1,3 +1,4 @@
+---
 name: plan-focus
 description: Define the next iteration focus
 ---
@@ -6,7 +7,14 @@ description: Define the next iteration focus
 
 You must define the next loop's focus.
 
-## Output → specs/CURRENT_FOCUS.md
+## Resolve Project
+
+Determine `<project>` using this priority order:
+1. Explicit argument passed when invoking this skill (e.g. `/plan-focus alpha`)
+2. Project declared in the current conversation (e.g. "working on: alpha")
+3. If neither is available, ask the user to specify the project name before proceeding.
+
+## Output → specs/\<project\>/CURRENT_FOCUS.md
 
 ---
 
