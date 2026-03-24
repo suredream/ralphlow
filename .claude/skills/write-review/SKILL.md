@@ -7,7 +7,20 @@ description: Evaluate content quality and readiness
 
 Evaluate the current draft.
 
-## Output → REVIEW.json
+## Resolve Project
+
+Determine `<project>` using this priority order:
+1. Explicit argument passed when invoking this skill (e.g. `/write-review startup-essay`)
+2. Project declared in the current conversation (e.g. `project: startup-essay` or `项目：startup-essay`)
+3. If neither is available, ask the user to specify the project name before proceeding.
+
+## Inputs
+
+- `content/<project>/CONTENT_SPEC.md`
+- `content/<project>/STRUCTURE.md`
+- `content/<project>/DRAFT.md`
+
+## Output → content/\<project\>/REVIEW.json
 
 ```json
 {
@@ -18,7 +31,7 @@ Evaluate the current draft.
   "minor": [],
   "recommendations": []
 }
-````
+```
 
 ## Criteria
 

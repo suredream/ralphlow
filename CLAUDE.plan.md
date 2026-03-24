@@ -36,13 +36,34 @@ specs/
 
 ## Active Project
 
-There is no global state file. The current project is determined per conversation:
+There is no global state file. The current project is determined per conversation.
 
-- **Declare at conversation start**: state which project you are working on (e.g. "working on: alpha" or "处理 alpha 项目").
-- **Explicit parameter**: pass the project name when invoking a skill (e.g. `/plan-eval alpha`). This overrides the conversation declaration.
-- **Multiple agents**: each agent conversation declares its own project independently — no coordination needed.
+### Declaring the active project
 
-Skills read the declared project from conversation context and operate on `specs/<project>/`.
+At the start of a conversation, declare which project you are working on:
+
+- English: `project: <name>` (e.g. `project: alpha`)
+- 中文：`项目：<name>`（如 `项目：alpha`）
+
+Skills use this declaration automatically for the rest of the conversation.
+
+### Project naming rules
+
+- Allowed characters: lowercase letters, digits, hyphens (`a-z0-9-`)
+- No spaces, no uppercase
+- Max 32 characters
+- Reserved: `archive` (cannot be used as a project name)
+- Examples: `market-entry`, `saas-pivot`, `hardware-idea`
+
+### Skill resolution priority
+
+1. **Explicit parameter**: `/plan-eval alpha` → uses `alpha`, overrides declaration
+2. **Conversation declaration**: uses the project declared at conversation start
+3. **Fallback**: if neither is present, the skill must ask the user — do NOT assume
+
+### Multiple agents
+
+Each agent conversation declares its own project independently — no coordination needed. Two agents declaring different projects operate on different subdirectories with no conflict.
 
 ---
 

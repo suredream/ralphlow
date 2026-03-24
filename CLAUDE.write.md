@@ -2,7 +2,7 @@
 
 ## Purpose
 
-This workflow converts structured ideas into high-quality written content (e.g.,公众号文章、长文、观点表达)。
+This workflow converts structured ideas into high-quality written content (e.g., 公众号文章、长文、观点表达).
 
 The goal is NOT to brainstorm endlessly, but to:
 
@@ -13,30 +13,73 @@ The goal is NOT to brainstorm endlessly, but to:
 
 ---
 
-## Core Files
+## Multi-Project Structure
 
-Located in current working directory:
+This directory manages multiple content projects under `content/`:
 
-- CONTENT_SPEC.md
-- STRUCTURE.md
-- DRAFT.md
-- CURRENT.md
-- RULES.md
-- EXECUTION_DECISION.md (if exists)
+```
+content/
+  RULES.md              ← workflow-level rules, shared across all projects
+  PROJECTS.md           ← active project index
+  <project-name>/       ← one subdirectory per content project
+    CONTENT_SPEC.md
+    STRUCTURE.md
+    DRAFT.md
+    REVIEW.json
+  archive/              ← archived projects (published or abandoned)
+    <project-name>/
+```
+
+---
+
+## Active Project
+
+There is no global state file. The current project is determined per conversation.
+
+### Declaring the active project
+
+At the start of a conversation, declare which project you are working on:
+
+- English: `project: <name>` (e.g. `project: startup-essay`)
+- 中文：`项目：<name>`（如 `项目：startup-essay`）
+
+Skills use this declaration automatically for the rest of the conversation.
+
+### Project naming rules
+
+- Allowed characters: lowercase letters, digits, hyphens (`a-z0-9-`)
+- No spaces, no uppercase
+- Max 32 characters
+- Reserved: `archive` (cannot be used as a project name)
+- Examples: `ai-agents-2025`, `startup-essay`, `product-launch`
+
+### Skill resolution priority
+
+1. **Explicit parameter**: `/write-draft startup-essay` → uses `startup-essay`, overrides declaration
+2. **Conversation declaration**: uses the project declared at conversation start
+3. **Fallback**: if neither is present, the skill must ask the user — do NOT assume
+
+### Multiple agents
+
+Each agent conversation declares its own project independently — no coordination needed. Two agents declaring different projects operate on different subdirectories with no conflict.
 
 ---
 
 ## Reading Order
 
-Before doing meaningful work:
+Before doing meaningful work, read in this order:
 
-1. CLAUDE.md
-2. RULES.md
-3. CURRENT.md
-4. EXECUTION_DECISION.md (if present)
-5. CONTENT_SPEC.md
-6. STRUCTURE.md
-7. DRAFT.md
+### Workflow-level (always)
+1. `CLAUDE.md`
+2. `content/RULES.md`
+3. `content/PROJECTS.md` ← identify active projects; confirm which project you are working on
+
+### Project-level (substituting `<project>` with the active project name)
+4. `content/<project>/CONTENT_SPEC.md`
+5. `content/<project>/STRUCTURE.md`
+6. `content/<project>/DRAFT.md`
+
+Do NOT read files under `content/archive/` unless explicitly asked.
 
 ---
 
@@ -46,6 +89,7 @@ Before doing meaningful work:
 - Do NOT expand scope beyond defined structure
 - Do NOT introduce new ideas not aligned with CONTENT_SPEC
 - Do NOT overwrite entire draft unless explicitly required
+- Do NOT operate on multiple projects in one loop unless explicitly instructed
 
 ---
 
@@ -77,7 +121,7 @@ If EXECUTION_DECISION.md exists:
 - repeating ideas with no new value
 - introducing unrelated concepts
 - overly long paragraphs with weak structure
-- “AI-style” filler language
+- "AI-style" filler language
 
 ---
 
@@ -91,6 +135,33 @@ If EXECUTION_DECISION.md exists:
 
 ---
 
+## Archive Policy
+
+Archive a project when:
+- the content is published
+- the project is abandoned
+- it has had no activity for 30+ days with no recovery plan
+
+To archive:
+1. `mv content/<name>/ content/archive/<name>/`
+2. Update `content/PROJECTS.md`: move the entry from Active to Archive, add reason and date.
+
+---
+
+## Available Commands
+
+```
+/write-spec [project]    — define content spec → CONTENT_SPEC.md
+/write-struct [project]  — generate article structure → STRUCTURE.md
+/write-draft [project]   — write or extend draft → DRAFT.md
+/write-logic [project]   — refine logical flow → DRAFT.md
+/write-review [project]  — evaluate content quality → REVIEW.json
+```
+
+`[project]` is optional. If omitted, the skill uses the project declared in the current conversation.
+
+---
+
 ## Stop Conditions
 
 Stop and refocus if:
@@ -99,3 +170,4 @@ Stop and refocus if:
 - structure is unclear
 - draft becomes too long without clarity
 - CURRENT scope is violated
+- active project is ambiguous

@@ -60,6 +60,18 @@ for skill in $SKILLS; do
     cp -r "$src" ".claude/skills/$skill"
 done
 
+# Copy workflow index template
+case "$MODE" in
+    plan)
+        mkdir -p "specs"
+        cp "$SCRIPT_DIR/specs/PROJECTS.md" "specs/PROJECTS.md"
+        ;;
+    write)
+        mkdir -p "content"
+        cp "$SCRIPT_DIR/content/PROJECTS.md" "content/PROJECTS.md"
+        ;;
+esac
+
 # Enable Ralph
 ralph-enable
 
