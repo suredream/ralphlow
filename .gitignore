@@ -1,0 +1,13 @@
+# OS files
+.DS_Store
+Thumbs.db
+
+# Local env files
+*.local
+.env
+.env.local
+.env.*.local
+
+# Claude Code - 忽略本地配置和会话，保留共享配置
+.claude/settings.local.json
+.claude/gui-sessions/

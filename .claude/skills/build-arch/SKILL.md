@@ -1,5 +1,5 @@
 ---
-name: get-arch
+name: build-arch
 description: Generate or revise specs/ARCH.md from specs/SPEC.md. Use when the spec exists and the system needs an explicit architecture, component model, boundaries, trade-offs, or integration plan.
 ---
 

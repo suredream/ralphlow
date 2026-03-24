@@ -1,5 +1,5 @@
 ---
-name: get-spec
+name: build-spec
 description: Generate or revise specs/SPEC.md from init_idea.md. Use when raw idea notes exist but the executable specification is missing, weak, outdated, or inconsistent.
 ---
 

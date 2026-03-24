@@ -1,5 +1,5 @@
 ---
-name: get-current
+name: build-current
 description: Generate or revise specs/CURRENT.md from specs/TASKS.md and specs/RULES.md. Use when one next slice must be selected for execution and tightly scoped for Ralph or another agent loop.
 ---
 

@@ -1,5 +1,5 @@
 ---
-name: get-tasks
+name: build-tasks
 description: Generate or revise specs/TASKS.md from specs/SPEC.md and specs/ARCH.md. Use when requirements and architecture exist but the implementation backlog is too vague, too large, or not execution-ready.
 ---
 

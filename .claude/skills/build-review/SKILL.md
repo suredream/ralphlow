@@ -1,5 +1,5 @@
 ---
-name: review-specs
+name: build-review
 description: Review all spec files and produce both human-readable analysis and a machine-readable specs/REVIEW.json for execution gating.
 ---
 
