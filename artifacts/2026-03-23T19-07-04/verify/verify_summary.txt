@@ -1,0 +1,4 @@
+No verification commands found.
+
+You can define them explicitly in:
+  scripts/verify.commands

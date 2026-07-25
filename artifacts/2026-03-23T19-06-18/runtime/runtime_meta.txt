@@ -1,0 +1,7 @@
+loop_id=2026-03-23T19-06-18
+timestamp=2026-03-23T19:06:18-07:00
+root_dir=/Users/junxiong/repos/ralphlow
+specs_dir=specs
+artifacts_dir=artifacts
+ralph_cmd=ralph
+run_ralph=true

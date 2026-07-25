@@ -24,7 +24,7 @@ case "$MODE" in
 esac
 
 # Skills per mode
-build_skills="build-arch build-current build-review build-spec build-tasks"
+build_skills="build-arch build-current build-go build-review build-spec build-tasks"
 plan_skills="plan-actions plan-dp plan-eval plan-focus plan-ready plan-review plan-spec"
 write_skills="write-draft write-logic write-review write-spec write-struct"
 
@@ -62,6 +62,10 @@ done
 
 # Copy workflow index template
 case "$MODE" in
+    build)
+        mkdir -p "specs"
+        cp "$SCRIPT_DIR/specs/RULES.md" "specs/RULES.md"
+        ;;
     plan)
         mkdir -p "specs"
         cp "$SCRIPT_DIR/specs/PROJECTS.md" "specs/PROJECTS.md"

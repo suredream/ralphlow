@@ -1,0 +1,11 @@
+
+This directory is not a Ralph project.
+
+To fix this:
+  1. Enable Ralph in existing project: ralph-enable
+  2. Create a new project: ralph-setup my-project
+  3. Import existing requirements: ralph-import requirements.md
+  4. Navigate to an existing Ralph project directory
+  5. Or create .ralph/PROMPT.md manually in this directory
+
+Ralph projects should contain: .ralph/PROMPT.md, .ralph/fix_plan.md, .ralph/specs/, src/, etc.

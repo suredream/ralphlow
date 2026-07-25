@@ -1,0 +1,52 @@
+{
+  "decision": "approve",
+  "summary": "T5 切片（创建 shared skills 目录结构）体量极小，仅需新建 1 个文件，验收标准具体可检查，Allowed Paths 已收窄至最小范围。SPEC/ARCH/TASKS/CURRENT 四文件内部一致，无架构冲突。存在一个 medium 问题：CURRENT.md 不应列入 Allowed Paths，因为执行器不应在实现过程中修改控制文档。该问题不阻断当前切片执行。",
+  "critical": [],
+  "medium": [
+    "CURRENT.md 被列在 Allowed Paths 中（`.claude/skills/shared/README.md` 和 `specs/CURRENT.md`）。review.sh 会将任何 specs/ 下文件的变更标记为 critical issue。执行器不应在实现 T5 时修改 CURRENT.md，建议从 Allowed Paths 中移除该项。"
+  ],
+  "minor": [
+    "SPEC Open Questions（OQ-1 至 OQ-4）仍全部开放，但均不阻断 T5 的执行。",
+    "T1 安装器对 --target 参数的设计决策（OQ-1）尚未锁定，但 T5 不依赖该决策。"
+  ],
+  "constraints": {
+    "strict_scope": true,
+    "max_files": 2,
+    "max_diff_lines": 80,
+    "forbidden_paths": [
+      "specs/SPEC.md",
+      "specs/ARCH.md",
+      "specs/TASKS.md",
+      "specs/RULES.md",
+      "specs/CURRENT.md",
+      ".claude/skills/builder",
+      ".claude/skills/planner",
+      ".claude/skills/writer",
+      "scripts/",
+      "CLAUDE.md",
+      "ralphlow-install.sh"
+    ],
+    "extra_required_checks": [
+      "确认 .claude/skills/shared/README.md 存在",
+      "确认 README.md 包含四项内容：定义、命名规范、v1 声明、判断标准",
+      "确认变更文件列表中不含 specs/ 下任何文件（CURRENT.md 不应被修改）",
+      "确认 README.md 使用中文写作"
+    ],
+    "notes": [
+      "T5 是整个任务链的前置基石，完成后解锁 T2/T3/T4 并行执行。",
+      "shared/ 目录 v1 为空（只有 README.md），不要求添加任何实际 skill。"
+    ]
+  },
+  "recommended_actions": [
+    "从 CURRENT.md 的 Allowed Paths 中移除 `specs/CURRENT.md` 一项，避免 review.sh 误报。",
+    "执行后运行 scripts/collect_artifacts.sh 和 scripts/review.sh 确认 changed-files.txt 仅含 1 个文件。",
+    "T5 完成后立即推进 T2（补全 builder bundle），T3/T4 可并行启动。"
+  ],
+  "current_patch": {
+    "should_shrink": false,
+    "reason": "",
+    "suggested_in_scope": [],
+    "suggested_out_of_scope": [],
+    "suggested_allowed_paths": []
+  }
+}
